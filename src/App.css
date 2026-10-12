@@ -1,210 +1,95 @@
 
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Outfit:wght@400;600;700;800&display=swap');
-
-:root {
-  font-family: 'DM Sans', sans-serif;
-  color: #292720;
-  background: #fffdf8;
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
+.cart-section {
+  margin: 0 8% 60px;
+  padding: 28px;
+  background: white;
+  border: 1px solid #eee9df;
+  border-radius: 18px;
 }
 
-* {
-  box-sizing: border-box;
-}
-
-body {
-  margin: 0;
-  min-width: 320px;
-}
-
-button, input {
-  font: inherit;
-}
-
-button, a {
-  cursor: pointer;
-}
-
-a {
-  color: inherit;
-  text-decoration: none;
-}
-
-.navbar {
-  min-height: 78px;
-  padding: 16px 8%;
+.cart-heading,
+.cart-item,
+.cart-total {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 20px;
+  gap: 18px;
+}
+
+.cart-heading h2 {
+  font-family: 'Outfit', sans-serif;
+}
+
+.cart-heading button,
+.quantity-controls button {
+  border: 0;
+  border-radius: 8px;
+  padding: 9px 12px;
+  background: #fff0e4;
+  color: #292720;
+}
+
+.cart-item {
+  padding: 20px 0;
   border-bottom: 1px solid #eee9df;
 }
 
-.logo {
-  font: 800 27px 'Outfit', sans-serif;
+.cart-emoji {
+  font-size: 40px;
 }
 
-.logo span, .hero h1 span {
-  color: #ef6b35;
+.cart-item-info {
+  flex: 1;
 }
 
-.navbar nav {
-  display: flex;
-  gap: 26px;
+.cart-item-info h3 {
+  margin: 0 0 5px;
 }
 
-.navbar button, .primary-button {
-  border: 0;
-  border-radius: 10px;
-  padding: 13px 18px;
-  background: #ef6b35;
-  color: white;
-  font-weight: 700;
-}
-
-.hero {
-  padding: 65px 10%;
-  background: #fff0e4;
-  min-height: 380px;
-}
-
-.eyebrow {
-  color: #ef6b35;
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 2px;
-}
-
-.hero h1 {
-  font: 800 clamp(38px, 6vw, 60px)/1.1 'Outfit', sans-serif;
-  letter-spacing: -2px;
-}
-
-.hero > p:not(.eyebrow) {
-  max-width: 480px;
-  line-height: 1.8;
+.cart-item-info p {
+  margin: 5px 0;
   color: #716b64;
-  margin-bottom: 26px;
-}
-
-.primary-button {
-  display: inline-block;
-}
-
-.hero-food {
-  float: right;
-  margin-top: -190px;
-  font-size: 145px;
-}
-
-.menu-section {
-  padding: 60px 8%;
-}
-
-.menu-section h2 {
-  font: 700 34px 'Outfit', sans-serif;
-}
-
-.search-input {
-  width: 100%;
-  max-width: 480px;
-  padding: 14px;
-  margin: 12px 0 28px;
-  border: 1px solid #e5dfd5;
-  border-radius: 10px;
-  background: white;
-}
-
-.food-grid {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 20px;
-}
-
-.food-card {
-  overflow: hidden;
-  border: 1px solid #eee9df;
-  border-radius: 16px;
-  background: white;
-}
-
-.food-image {
-  display: grid;
-  place-items: center;
-  height: 145px;
-  background: #fff0e4;
-  font-size: 75px;
-}
-
-.food-details {
-  padding: 16px;
-}
-
-.food-details p {
-  color: #ef6b35;
   font-size: 13px;
 }
 
-.food-details h3 {
-  font: 600 17px 'Outfit', sans-serif;
-  min-height: 42px;
-}
-
-.food-bottom {
+.quantity-controls {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 10px;
+  gap: 12px;
 }
 
-.food-bottom button {
-  width: 36px;
-  height: 36px;
+.remove-button {
   border: 0;
-  border-radius: 10px;
-  background: #ef6b35;
-  color: white;
-  font-size: 23px;
+  background: transparent;
+  color: #c83f32;
 }
 
-.footer {
-  padding: 30px;
-  text-align: center;
-  border-top: 1px solid #eee9df;
+.cart-total {
+  padding: 24px 0;
+  font-size: 20px;
 }
 
-@media (max-width: 800px) {
-  .food-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+.cart-total strong {
+  color: #ef6b35;
+  font-size: 24px;
+}
+
+@media (max-width: 600px) {
+  .cart-section {
+    margin: 0 5% 40px;
+    padding: 18px;
   }
 
-  .hero-food {
-    float: none;
-    margin-top: 30px;
-  }
-}
-
-@media (max-width: 480px) {
-  .navbar {
-    padding: 16px 5%;
+  .cart-item {
     flex-wrap: wrap;
-  }
-
-  .navbar nav {
-    gap: 14px;
-  }
-
-  .hero, .menu-section {
-    padding: 40px 5%;
-  }
-
-  .food-grid {
     gap: 12px;
   }
 
-  .food-details {
-    padding: 10px;
+  .cart-item-info {
+    min-width: 120px;
+  }
+
+  .remove-button {
+    margin-left: auto;
   }
 }
