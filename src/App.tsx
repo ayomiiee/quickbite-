@@ -1,5 +1,6 @@
 
-import { useState } from 'react'
+import {  useEffect, useState } from 'react'
+const CART_STORAGE_KEY = 'quickbite-cart'
 import './App.css'
 
 type Food = {
@@ -22,10 +23,28 @@ const foods: Food[] = [
   { id: 4, name: 'Fresh Salad', category: 'Healthy', price: 4000, emoji: '🥗' },
 ]
 
+
 function App() {
   const [search, setSearch] = useState('')
-  const [cart, setCart] = useState<CartItem[]>([])
+
+  const [cart, setCart] = useState<CartItem[]>(() => {
+    try {
+      const savedCart = localStorage.getItem(CART_STORAGE_KEY)
+
+      if (savedCart) {
+        return JSON.parse(savedCart) as CartItem[]
+      }
+    } catch {
+      console.error('Could not restore the saved cart.')
+    }
+
+    return []
+  })
+
   const [cartOpen, setCartOpen] = useState(false)
+  useEffect(() => {
+  localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cart))
+}, [cart])
 
   const filteredFoods = foods.filter((food) =>
     food.name.toLowerCase().includes(search.toLowerCase()),
