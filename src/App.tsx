@@ -1,6 +1,7 @@
 
 import {  useEffect, useState } from 'react'
 const CART_STORAGE_KEY = 'quickbite-cart'
+const ORDERS_STORAGE_KEY = 'quickbite-orders'
 import './App.css'
 
 type Food = {
@@ -42,10 +43,43 @@ function App() {
   })
 
   const [cartOpen, setCartOpen] = useState(false)
+  const [checkoutOpen, setCheckoutOpen] = useState(false)
+const [customerName, setCustomerName] = useState('')
+const [customerPhone, setCustomerPhone] = useState('')
+const [deliveryAddress, setDeliveryAddress] = useState('')
+
+type Order = {
+  orderNumber: string
+  customerName: string
+  customerPhone: string
+  deliveryAddress: string
+  items: CartItem[]
+  total: number
+}
+
+const [completedOrder, setCompletedOrder] = useState<Order | null>(null)
+const [orderHistory, setOrderHistory] = useState<Order[]>(() => {
+  try {
+    const savedOrders = localStorage.getItem(ORDERS_STORAGE_KEY)
+
+    if (savedOrders) {
+      return JSON.parse(savedOrders) as Order[]
+    }
+  } catch {
+    console.error('Could not restore order history.')
+  }
+
+  return []
+})
   useEffect(() => {
   localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cart))
 }, [cart])
-
+useEffect(() => {
+  localStorage.setItem(
+    ORDERS_STORAGE_KEY,
+    JSON.stringify(orderHistory),
+  )
+}, [orderHistory])
   const filteredFoods = foods.filter((food) =>
     food.name.toLowerCase().includes(search.toLowerCase()),
   )
@@ -220,19 +254,181 @@ function App() {
                 </div>
 
                 <button
-                  className="primary-button"
-                  onClick={() =>
-                    alert('Cart ready! We will build checkout next.')
-                  }
-                >
-                  Continue to checkout →
-                </button>
+  className="primary-button"
+  onClick={() => {
+    if (cart.length > 0) {
+      setCheckoutOpen(true)
+    }
+  }}
+>
+  Continue to checkout →
+</button>
               </>
             )}
           </section>
         )}
-      </main>
+        
+        {checkoutOpen && (
+          <section className="cart-section">
+            <h2>Delivery details</h2>
+            <p>Where should we deliver your delicious order?</p>
 
+            <form
+              onSubmit={(event) => {
+  event.preventDefault()
+
+  const order: Order = {
+    orderNumber: `QB-${Date.now().toString().slice(-8)}`,
+    customerName,
+    customerPhone,
+    deliveryAddress,
+    items: cart.map((item) => ({ ...item })),
+    total: cartTotal,
+  }
+
+ setCompletedOrder(order)
+setOrderHistory((previousOrders) => [
+  order,
+  ...previousOrders,
+])
+setCart([])
+setCheckoutOpen(false)
+setCartOpen(false)
+}}
+              className="checkout-form"
+            >
+              <label>
+                Full name
+                <input
+                  required
+                  value={customerName}
+                  onChange={(event) => setCustomerName(event.target.value)}
+                  placeholder="Enter your full name"
+                />
+              </label>
+
+              <label>
+                Phone number
+                <input
+                  required
+                  type="tel"
+                  value={customerPhone}
+                  onChange={(event) => setCustomerPhone(event.target.value)}
+                  placeholder="Enter your phone number"
+                />
+              </label>
+
+              <label>
+                Delivery address
+                <textarea
+                  required
+                  value={deliveryAddress}
+                  onChange={(event) => setDeliveryAddress(event.target.value)}
+                  placeholder="Enter your complete delivery address"
+                  rows={3}
+                />
+              </label>
+
+              <div className="cart-total">
+                <span>Order total</span>
+                <strong>{formatPrice(cartTotal)}</strong>
+              </div>
+
+              <button className="primary-button" type="submit">
+                Confirm details
+              </button>
+
+              <button
+                className="cancel-button"
+                type="button"
+                onClick={() => setCheckoutOpen(false)}
+              >
+                Back to shopping
+              </button>
+            </form>
+          </section>
+        )}
+{completedOrder && (
+  <section className="cart-section order-confirmation">
+    <div className="success-icon">✓</div>
+
+    <p className="eyebrow">ORDER CONFIRMED</p>
+
+    <h2>Thank you, {completedOrder.customerName}!</h2>
+
+    <p>Your demo order has been recorded in this page.</p>
+
+    <div className="order-reference">
+      <span>Order reference</span>
+      <strong>{completedOrder.orderNumber}</strong>
+    </div>
+
+    <h3>Order summary</h3>
+
+    {completedOrder.items.map((item) => (
+      <div className="order-summary-item" key={item.food.id}>
+        <span>
+          {item.food.emoji} {item.food.name} × {item.quantity}
+        </span>
+        <strong>
+          {formatPrice(item.food.price * item.quantity)}
+        </strong>
+      </div>
+    ))}
+
+    <div className="cart-total">
+      <span>Total</span>
+      <strong>{formatPrice(completedOrder.total)}</strong>
+    </div>
+
+    <div className="delivery-summary">
+      <h3>Delivery details</h3>
+      <p>{completedOrder.customerPhone}</p>
+      <p>{completedOrder.deliveryAddress}</p>
+    </div>
+
+    <button
+      className="primary-button"
+      onClick={() => {
+        setCompletedOrder(null)
+        setCustomerName('')
+        setCustomerPhone('')
+        setDeliveryAddress('')
+        setSearch('')
+        window.scrollTo({ top: 0, behavior: 'smooth' })
+      }}
+    >
+      Order more food
+    </button>
+  </section>
+)}
+
+<section className="cart-section order-history">
+  <h2>Your Order History</h2>
+
+  {orderHistory.length === 0 ? (
+    <p>Your previous orders will appear here.</p>
+  ) : (
+    orderHistory.map((order) => (
+      <article className="history-card" key={order.orderNumber}>
+        <div className="history-heading">
+          <strong>{order.orderNumber}</strong>
+          <strong>{formatPrice(order.total)}</strong>
+        </div>
+
+        <p>{order.customerName}</p>
+
+        {order.items.map((item) => (
+          <p key={item.food.id}>
+            {item.food.emoji} {item.food.name} × {item.quantity}
+          </p>
+        ))}
+      </article>
+    ))
+  )}
+</section>
+
+      </main>
       <footer className="footer">
         QuickBite. Made for food lovers ❤️
       </footer>
