@@ -48,6 +48,12 @@ const [customerName, setCustomerName] = useState('')
 const [customerPhone, setCustomerPhone] = useState('')
 const [deliveryAddress, setDeliveryAddress] = useState('')
 
+type OrderStatus =
+  | 'Order Placed'
+  | 'Preparing'
+  | 'Out for Delivery'
+  | 'Delivered'
+
 type Order = {
   orderNumber: string
   customerName: string
@@ -55,6 +61,7 @@ type Order = {
   deliveryAddress: string
   items: CartItem[]
   total: number
+  status: OrderStatus
 }
 
 const [completedOrder, setCompletedOrder] = useState<Order | null>(null)
@@ -284,6 +291,7 @@ useEffect(() => {
     deliveryAddress,
     items: cart.map((item) => ({ ...item })),
     total: cartTotal,
+    status: 'Order Placed',
   }
 
  setCompletedOrder(order)
@@ -357,7 +365,9 @@ setCartOpen(false)
     <h2>Thank you, {completedOrder.customerName}!</h2>
 
     <p>Your demo order has been recorded in this page.</p>
-
+<p className="order-status">
+  status: {completedOrder.status ?? 'Order Placed'}
+</p>
     <div className="order-reference">
       <span>Order reference</span>
       <strong>{completedOrder.orderNumber}</strong>
@@ -415,7 +425,39 @@ setCartOpen(false)
           <strong>{order.orderNumber}</strong>
           <strong>{formatPrice(order.total)}</strong>
         </div>
+<p className= "order-status"> 
+  Status: {order.status ?? 'Order Placed'}
+</p>
+<label>
+  Update status:
+  <select
+    value={order.status ?? 'Order Placed'}
+    onChange={(event) => {
+      const newStatus = event.target.value as OrderStatus
 
+      setOrderHistory((previousOrders) =>
+        previousOrders.map((previousOrder) =>
+          previousOrder.orderNumber === order.orderNumber
+            ? { ...previousOrder, status: newStatus }
+            : previousOrder,
+        ),
+      )
+
+      if (completedOrder?.orderNumber === order.orderNumber) {
+        setCompletedOrder((previousOrder) =>
+          previousOrder
+            ? { ...previousOrder, status: newStatus }
+            : null,
+        )
+      }
+    }}
+  >
+    <option value="Order Placed">Order Placed</option>
+    <option value="Preparing">Preparing</option>
+    <option value="Out for Delivery">Out for Delivery</option>
+    <option value="Delivered">Delivered</option>
+  </select>
+</label>
         <p>{order.customerName}</p>
 
         {order.items.map((item) => (
